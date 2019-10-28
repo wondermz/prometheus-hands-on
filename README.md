@@ -2,9 +2,11 @@
 
 이 HandsOn은 EKS-hands-on 실습에 이어서 진행되는 handson입니다.
 
-Prometheus 를 Kubernetes 클러스터 내에 설치하는 방법은 여러가지가 있지만, helm chart 와 Prometheus Operator 를 사용하여 간단하게 설치하고, 실제 운용환경에서 손쉽게 운용할 수 있습니다.
+Prometheus 를 Kubernetes 클러스터 내에 설치하는 방법은 여러가지가 있지만, 는
 
-Helm Chart 와 Prometheus Operator 에 대한 자세한 내용은 해당 문서를 참조하시기 바랍니다.
+helm chart 와 Prometheus Operator 를 사용하여 간단하게 설치하고, 실제 운용환경에서 손쉽게 운용할 수 있습니다.
+
+Helm Chart 와 Prometheus Operator 에 대한 자세한 아키텍쳐와 동작 구조은 해당 문서를 참조하시기 바랍니다.
 
 * [Helm Chart](https://helm.sh/)
 * [Prometheus Operator](https://coreos.com/blog/the-prometheus-operator.html)
@@ -13,6 +15,7 @@ Helm Chart 와 Prometheus Operator 에 대한 자세한 내용은 해당 문서�
 ## 1. 기본 환경 만들기
 
 이전에 EKS HandsOn 수업을 따라 오신 분들은 kubectl 전용 인스턴스에서 시작하시면 됩니다.
+
 Kubernetes Cluster 가 준비되지 않으신 분들은 [EKS HandsOn](https://github.com/wondermz/eks-hands-on)을 따라하신 후 이 HandsOn을 따라하시면 됩니다.
 
 ### 1-1. Helm 설치하기
@@ -30,10 +33,10 @@ $ ./get_helm.sh
 
 ```
 
-### 1-2. Tiller 설정 및 Service Account 생
+### 1-2. Tiller 설정 및 Tiler Service Account 생
 
-Helm 은 kubernetes 클러스터에 대한 Tiller 를 통해 kubernetes resource 들을 설치하기 때문에,
-Tiller 가 사용할 서비스 계정을 만들어야 합니다. 그 이후 클러스터에 적용합니다.
+Helm 은 Tiller 라는 deploy Service 를 통해 kubernetes resource 들을 설치하기 때문에,
+Tiller 가 사용할 서비스 계정을 만들어야 합니다. 그 이후 helm 초기화를 통해 Prometheus 설치를 위한 helm 기본 준비를 합니다.
 
 ```
 cat <<EoF > ~/rbac.yaml
@@ -60,7 +63,7 @@ EoF
 
 ```
 
-이후에 config 파일을 적용한 후, tiller service account를 사용하여 helm init 을 적용하시면 됩니다. 
+이제 config 파일을 적용한 후, tiller service account를 사용하여 helm init 을 적용하시면 됩니다. 
 
 ```
 
