@@ -72,7 +72,7 @@ $ helm init --service-account tiller
 
 ## 2. Prometheus Operator 설치하기
 
-\
+
 설치가 완료된 후 helm chart 에서 Prometheus 와 Grafana Dashboard 를 한번에 설치하도록 도와주는 Prometheus Operator 를 사용하여 Prometheus를 설치합니다. 우선 Helm repo 에 Prometheus Operator 가 있는지 확인합니다.
 
 
@@ -88,9 +88,12 @@ $ helm search prometheus-operator
 $ kubectl create namespace prometheus-operator
 $ kcd prometheus-operator
 ```
+
+***
+
 helm 은 설치 시 custom value 를 통해 간단하게 개인 환경에 맞는 설정으로 변경할 수 있습니다.
 
-Grafana Dashboard 접속과 password 설정을 위해 prometheus value yaml file 을 하나 생성합니다.정
+Grafana Dashboard 접속과 password 설정을 위해 prometheus value yaml file 을 하나 생성합니다.  
 
 혹시 Prometheus Operator에 추가로 설정하실 value 가 있다면 , 관련 value 설정은 [github](https://github.com/helm/charts/tree/master/stable/prometheus-operator)를 참조하시면 됩니다.
 
@@ -161,7 +164,12 @@ statefulset.apps/prometheus-wondermz-prometheus-operat-prometheus       1/1     
 ~~~
 
 이렇게 모든 관련 service 들이 running 상태에 들어간 후, 실제 Grafana DashBoard 에 접속하기 위해 AWS ELB service 주소로 접속합니다.
+
 명령어로 친 후 Extermal-ip 의 주소를 주소창에 입력해서 접속하시면 됩니다.
+
+만약 Externel-ip 생성이 Pending 상태일 때, 약 5-10분정도 기다리시면 생성됩니다.
+
+
 ~~~
 
 $k get svc wondermz-grafana -o wide
@@ -173,6 +181,8 @@ wondermz-grafana   LoadBalancer   10.100.247.37   a46547715f95a11e99a4a02a530d53
 
 
 접속 id 는 admin, 비밀번호는 wondermz 로 grafana dashboard 에 접속하시면 default dashboard 가 있는 것을 확인할 수 있습니다.
+
+
 
 
 
