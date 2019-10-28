@@ -13,8 +13,11 @@ Helm Chart 와 Prometheus Operator 에 대한 자세한 내용은 해당 문서�
 ## 1. 기본 환경 만들기
 
 이전에 EKS HandsOn 수업을 따라 오신 분들은 kubectl 전용 인스턴스에서 시작하시면 됩니다.
+Kubernetes Cluster 가 준비되지 않으신 분들은 [EKS HandsOn](https://github.com/wondermz/eks-hands-on)을 따라하신 후 이 HandsOn을 따라하시면 됩니다.
 
-**EC2 접속 후 **
+### 1-1. Helm 설치하기
+
+**Kubectl EC2 접속 후 **
 
 kubectl ec2 인스턴스에 접속한 후 다음의 명령어를 입력하여 설치 스크립트를 받고 실행하시면 됩니다.
 
@@ -37,10 +40,38 @@ helm을 설치하고 Service account를 생성했으니 다음의 명령어로 T
 
 ```
 
-helm init --service-account tiller
-helm repo update
+$ helm init --service-account tiller
+$ helm repo update
 
 ```
+
+
+### 1-2. Prometheus Operator 설치하기
+
+설치가 완료된 후 helm chart 에서 Prometheus 와 Grafana Dashboard 를 한번에 설치하도록 도와주는 Prometheus Operator 를 사용하여 Prometheus를 설치합니다. 우선 Helm repo 에 Prometheus Operator 가 있는지 확인합니다.
+
+```
+$ helm search prometheus-operator
+
+```
+
+helm 은 설치 시 custom value 를 통해 간단하게 개인 환경에 맞는 설정으로 변경할 수 있습니다.
+우선 특정 namespace 를 하나 생성하여 prometheus operator 를 설치합니다.
+```
+$ kubectl create namespace prometheus-operator
+$ kcd prometheus-operator
+# 여기서 --name은 helm install 시 생기는 release 이름을 지정한 것이며, --namespace는 특정 namespace 에 설치, 
+# --set 부분은 custom value 를 사용하는 것입니다. yaml file 로 생성하여 지정해도 됩니다. 
+$ helm install stable/prometheus-operator --name wondermz --namespace prometheus-operator --set grafana.adminPassword="wondermz"
+
+```
+
+
+
+
+
+
+
 
 
 
