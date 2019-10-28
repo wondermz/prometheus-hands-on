@@ -2,7 +2,7 @@
 
 이 HandsOn은 EKS-hands-on 실습에 이어서 진행되는 handson입니다.
 
-Prometheus 를 Kubernetes 클러스터 내에 설치하는 방법은 여러가지가 있지만, 는
+Prometheus 를 Kubernetes 클러스터 내에 설치하는 방법은 여러가지가 있지만,
 
 helm chart 와 Prometheus Operator 를 사용하여 간단하게 설치하고, 실제 운용환경에서 손쉽게 운용할 수 있습니다.
 
@@ -14,9 +14,11 @@ Helm Chart 와 Prometheus Operator 에 대한 자세한 아키텍쳐와 동작 �
 
 ## 1. 기본 환경 만들기
 
-이전에 EKS HandsOn 수업을 따라 오신 분들은 kubectl 전용 인스턴스에서 시작하시면 됩니다.
+이전에 EKS HandsOn 수업을 따라 오신 분들, 혹은 기존에 EKS Kubernetes Cluster 가 존재하시는 분들은 kubectl 전용 인스턴스에서 시작하시면 됩니다.
 
 Kubernetes Cluster 가 준비되지 않으신 분들은 [EKS HandsOn](https://github.com/wondermz/eks-hands-on)을 따라하신 후 이 HandsOn을 따라하시면 됩니다.
+
+
 
 ### 1-1. Helm 설치하기
 
