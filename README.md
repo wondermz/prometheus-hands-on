@@ -96,6 +96,8 @@ $ kcd prometheus-operator
 
 ***
 
+### 2-1. Helm Custom Value 설정하기  
+
 helm 은 설치 시 custom value 를 통해 간단하게 개인 환경에 맞는 설정으로 변경할 수 있습니다.
 
 Grafana Dashboard 접속과 password 설정을 위해 prometheus value yaml file 을 하나 생성합니다.  
@@ -114,6 +116,11 @@ grafana:
   service: 
     type: LoadBalancer
 ~~~
+***
+### 2-2. Helm Chart 로 Prometheus Operator 설치하기 
+
+
+
 
 기본적으로 Prometheus Operator stable version chart 를 사용하며, --name 은 helm chart 의 release name, --namespace 는 namespace 지정, -f 는 해당 파일 지정 tag 를 사용하여 설치하시면 됩니다. 
 
@@ -167,6 +174,11 @@ NAME                                                                    READY   
 statefulset.apps/alertmanager-wondermz-prometheus-operat-alertmanager   1/1     17m
 statefulset.apps/prometheus-wondermz-prometheus-operat-prometheus       1/1     17m
 ~~~
+
+***
+
+### 2-3. Grafana Dashboard 접속하기
+
 
 이렇게 모든 관련 service 들이 running 상태에 들어간 후, 실제 Grafana DashBoard 에 접속하기 위해 AWS ELB service 주소로 접속합니다.
 
