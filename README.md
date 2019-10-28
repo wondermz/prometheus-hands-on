@@ -80,6 +80,11 @@ $ helm init --service-account tiller
 $ helm repo update
 $ helm search prometheus-operator
 ```
+
+~~~
+NAME                      	CHART VERSION	APP VERSION	DESCRIPTION
+stable/prometheus-operator	6.21.0       	0.32.0     	Provides easy monitoring definitions for Kubernetes servi...
+~~~
 우선 특정 namespace 를 하나 생성하여 prometheus operator 를 설치합니다.
 
 
