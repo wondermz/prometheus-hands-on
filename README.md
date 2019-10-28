@@ -17,7 +17,7 @@ Kubernetes Cluster 가 준비되지 않으신 분들은 [EKS HandsOn](https://gi
 
 ### 1-1. Helm 설치하기
 
-**Kubectl EC2 접속 후 **
+* Kubectl EC2 접속 후 
 
 kubectl ec2 인스턴스에 접속한 후 다음의 명령어를 입력하여 설치 스크립트를 받고 실행하시면 됩니다.
 
@@ -32,7 +32,9 @@ $ ./get_helm.sh
 
 ### 1-2. Tiller 설정 및 Service Account 생
 
-Helm 은 kubernetes 클러스터에 대한 Tiller 설치에 대해 의존함으로 Tiller 가 사용할 서비스 계정을 만들어야 합니다. 그 이후 클러스터에 적용합니다.
+Helm 은 kubernetes 클러스터에 대한 Tiller 를 통해 kubernetes resource 들을 설치하기 때문에,
+Tiller 가 사용할 서비스 계정을 만들어야 합니다. 그 이후 클러스터에 적용합니다.
+
 ```
 cat <<EoF > ~/rbac.yaml
 ---
@@ -68,29 +70,48 @@ $ helm init --service-account tiller
 ```
 
 
-### 1-2. Prometheus Operator 설치하기
+## 2. Prometheus Operator 설치하기
 
+\
 설치가 완료된 후 helm chart 에서 Prometheus 와 Grafana Dashboard 를 한번에 설치하도록 도와주는 Prometheus Operator 를 사용하여 Prometheus를 설치합니다. 우선 Helm repo 에 Prometheus Operator 가 있는지 확인합니다.
+
 
 ```
 $ helm repo update
 $ helm search prometheus-operator
-
 ```
-
-helm 은 설치 시 custom value 를 통해 간단하게 개인 환경에 맞는 설정으로 변경할 수 있습니다.
 우선 특정 namespace 를 하나 생성하여 prometheus operator 를 설치합니다.
+
+
 
 ```
 $ kubectl create namespace prometheus-operator
 $ kcd prometheus-operator
-
-## 여기서 --name은 helm install 시 생기는 release 이름을 지정한 것이며, --namespace는 특정 namespace 에 설치, 
-## --set 부분은 custom value 를 사용하는 것입니다. yaml file 로 생성하여 지정해도 됩니다. 
-##지금은 간단하게 설치하기 위해 이렇게 직접 명령어로 변수 지정하겠습니다.
-
-$ helm install stable/prometheus-operator --name wondermz --namespace prometheus-operator --set grafana.adminPassword="wondermz" --set grafana.service.type=LoadBalancer 
 ```
+helm 은 설치 시 custom value 를 통해 간단하게 개인 환경에 맞는 설정으로 변경할 수 있습니다.
+
+Grafana Dashboard 접속과 password 설정을 위해 prometheus value yaml file 을 하나 생성합니다.정
+
+혹시 Prometheus Operator에 추가로 설정하실 value 가 있다면 , 관련 value 설정은 [github](https://github.com/helm/charts/tree/master/stable/prometheus-operator)를 참조하시면 됩니다.
+
+~~~
+vi values.yml
+~~~
+
+~~~
+#values.yml
+
+grafana: 
+  adminPassword: wondermz
+  service: 
+    type: LoadBalancer
+~~~
+
+기본적으로 Prometheus Operator stable version chart 를 사용하며, --name 은 helm chart 의 release name, --namespace 는 namespace 지정, -f 는 해당 파일 지정 tag 를 사용하여 설치하시면 됩니다. 
+
+~~~
+$ helm install stable/prometheus-operator --name wondermz --namespace prometheus-operator -f values.yml 
+~~~
 
 약 1분정도 기다리시면 helm chart 에 있는 모든 service , Pod 등이 생성됩니다.
 
@@ -99,46 +120,44 @@ $ helm install stable/prometheus-operator --name wondermz --namespace prometheus
 $ k get all
 
 
-NAME                                                         READY   STATUS              RESTARTS   AGE
-pod/alertmanager-wondermz-prometheus-operat-alertmanager-0   2/2     Running             0          33s
-pod/prometheus-wondermz-prometheus-operat-prometheus-0       0/3     ContainerCreating   0          23s
-pod/wondermz-grafana-68cf89564b-h6cjj                        2/2     Running             0          44s
-pod/wondermz-kube-state-metrics-856dcdcc67-q5l2q             1/1     Running             0          44s
-pod/wondermz-prometheus-node-exporter-2rb57                  1/1     Running             0          44s
-pod/wondermz-prometheus-node-exporter-5ck8n                  1/1     Running             0          44s
-pod/wondermz-prometheus-node-exporter-8sfjb                  1/1     Running             0          44s
-pod/wondermz-prometheus-node-exporter-kq896                  1/1     Running             0          44s
-pod/wondermz-prometheus-node-exporter-t9cz8                  1/1     Running             0          44s
-pod/wondermz-prometheus-operat-operator-54545684f5-54777     2/2     Running             0          44s
+NAME                                                         READY   STATUS    RESTARTS   AGE
+pod/alertmanager-wondermz-prometheus-operat-alertmanager-0   2/2     Running   0          17m
+pod/prometheus-wondermz-prometheus-operat-prometheus-0       3/3     Running   1          17m
+pod/wondermz-grafana-68cf89564b-5749l                        2/2     Running   0          17m
+pod/wondermz-kube-state-metrics-856dcdcc67-h6ncg             1/1     Running   0          17m
+pod/wondermz-prometheus-node-exporter-7rh2z                  1/1     Running   0          17m
+pod/wondermz-prometheus-node-exporter-chtfd                  1/1     Running   0          17m
+pod/wondermz-prometheus-node-exporter-fjsm6                  1/1     Running   0          17m
+pod/wondermz-prometheus-node-exporter-pg8d4                  1/1     Running   0          17m
+pod/wondermz-prometheus-node-exporter-tctvq                  1/1     Running   0          17m
+pod/wondermz-prometheus-operat-operator-54545684f5-9tpfc     2/2     Running   0          17m
 
-NAME                                              TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
-service/alertmanager-operated                     ClusterIP      None             <none>        9093/TCP,9094/TCP,9094/UDP   33s
-service/prometheus-operated                       ClusterIP      None             <none>        9090/TCP                     23s
-service/wondermz-grafana                          LoadBalancer   10.100.120.84    <pending>     80:30296/TCP                 45s
-service/wondermz-kube-state-metrics               ClusterIP      10.100.7.201     <none>        8080/TCP                     45s
-service/wondermz-prometheus-node-exporter         ClusterIP      10.100.148.159   <none>        9100/TCP                     45s
-service/wondermz-prometheus-operat-alertmanager   ClusterIP      10.100.159.106   <none>        9093/TCP                     45s
-service/wondermz-prometheus-operat-operator       ClusterIP      10.100.163.234   <none>        8080/TCP,443/TCP             44s
-service/wondermz-prometheus-operat-prometheus     ClusterIP      10.100.151.242   <none>        9090/TCP                     45s
+NAME                                              TYPE           CLUSTER-IP       EXTERNAL-IP                                                                    PORT(S)                      AGE
+service/alertmanager-operated                     ClusterIP      None             <none>                                                                         9093/TCP,9094/TCP,9094/UDP   17m
+service/prometheus-operated                       ClusterIP      None             <none>                                                                         9090/TCP                     17m
+service/wondermz-grafana                          LoadBalancer   10.100.247.37    a46547715f95a11e99a4a02a530d5340-1940580701.ap-northeast-2.elb.amazonaws.com   80:32046/TCP                 17m
+service/wondermz-kube-state-metrics               ClusterIP      10.100.68.62     <none>                                                                         8080/TCP                     17m
+service/wondermz-prometheus-node-exporter         ClusterIP      10.100.49.97     <none>                                                                         9100/TCP                     17m
+service/wondermz-prometheus-operat-alertmanager   ClusterIP      10.100.231.204   <none>                                                                         9093/TCP                     17m
+service/wondermz-prometheus-operat-operator       ClusterIP      10.100.127.142   <none>                                                                         8080/TCP,443/TCP             17m
+service/wondermz-prometheus-operat-prometheus     ClusterIP      10.100.233.125   <none>                                                                         9090/TCP                     17m
 
 NAME                                               DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-daemonset.apps/wondermz-prometheus-node-exporter   5         5         5       5            5           <none>          44s
+daemonset.apps/wondermz-prometheus-node-exporter   5         5         5       5            5           <none>          17m
 
 NAME                                                  READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/wondermz-grafana                      1/1     1            1           44s
-deployment.apps/wondermz-kube-state-metrics           1/1     1            1           44s
-deployment.apps/wondermz-prometheus-operat-operator   1/1     1            1           44s
+deployment.apps/wondermz-grafana                      1/1     1            1           17m
+deployment.apps/wondermz-kube-state-metrics           1/1     1            1           17m
+deployment.apps/wondermz-prometheus-operat-operator   1/1     1            1           17m
 
 NAME                                                             DESIRED   CURRENT   READY   AGE
-replicaset.apps/wondermz-grafana-68cf89564b                      1         1         1       44s
-replicaset.apps/wondermz-kube-state-metrics-856dcdcc67           1         1         1       44s
-replicaset.apps/wondermz-prometheus-operat-operator-54545684f5   1         1         1       44s
+replicaset.apps/wondermz-grafana-68cf89564b                      1         1         1       17m
+replicaset.apps/wondermz-kube-state-metrics-856dcdcc67           1         1         1       17m
+replicaset.apps/wondermz-prometheus-operat-operator-54545684f5   1         1         1       17m
 
 NAME                                                                    READY   AGE
-statefulset.apps/alertmanager-wondermz-prometheus-operat-alertmanager   1/1     33s
-statefulset.apps/prometheus-wondermz-prometheus-operat-prometheus       0/1     23s
-
-
+statefulset.apps/alertmanager-wondermz-prometheus-operat-alertmanager   1/1     17m
+statefulset.apps/prometheus-wondermz-prometheus-operat-prometheus       1/1     17m
 ~~~
 
 이렇게 모든 관련 service 들이 running 상태에 들어간 후, 실제 Grafana DashBoard 에 접속하기 위해 AWS ELB service 주소로 접속합니다.
@@ -151,6 +170,11 @@ NAME               TYPE           CLUSTER-IP      EXTERNAL-IP                   
 wondermz-grafana   LoadBalancer   10.100.247.37   a46547715f95a11e99a4a02a530d5340-1940580701.ap-northeast-2.elb.amazonaws.com   80:32046/TCP   15m   app=grafana,release=wondermz
 
 ~~~
+
+
+접속 id 는 admin, 비밀번호는 wondermz 로 grafana dashboard 에 접속하시면 default dashboard 가 있는 것을 확인할 수 있습니다.
+
+
 
 
 

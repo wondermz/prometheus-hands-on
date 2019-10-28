@@ -1,0 +1,4 @@
+grafana:
+  adminPassword: wondermz
+  service:
+    type: LoadBalancer
