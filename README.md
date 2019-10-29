@@ -109,9 +109,9 @@ grafana:
 
 해당 HandsOn에서 사용하는 value.yml 파일을 살펴보면, 
 
-* `grafana.adminPassword` = `wondermz` 는 Grafana Dashboard 에 접속 시 사용할 Default Password 를 지정하는 것입니다.
+* `grafana.adminPassword = wondermz` 는 Grafana Dashboard 에 접속 시 사용할 Default Password 를 지정하는 것입니다.
 
-* `grafana.service.type` = `LoadBalancer` 는 Grafana Dashboard 에 접근하기 위해, EKS 에서 제공하는 AWS CLB 를 생성하여 해당 Grafana Pod를 연결하는 방식을 사용했습니다. 
+* `grafana.service.type = LoadBalancer` 는 Grafana Dashboard 에 접근하기 위해, EKS 에서 제공하는 AWS CLB 를 생성하여 해당 Grafana Pod를 연결하는 방식을 사용했습니다. 
 이 외에도 NodePort 방식을 사용해 직접 Port 를 개방할 수 있습니다.  
 
 
