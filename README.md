@@ -1,4 +1,4 @@
-# prometheus-hands-on
+# Prometheus-hands-on
 
 이 HandsOn은 EKS-hands-on 실습에 이어서 진행되는 handson입니다.
 
