@@ -1,12 +1,12 @@
 # Prometheus-hands-on
 
-이 HandsOn은 EKS-hands-on 실습에 이어서 진행되는 handson입니다.
+이 HandsOn은 EKS-hands-on 실습에 이어서 진행되는 핸즈온입니다.
 
-Prometheus 를 Kubernetes 클러스터 내에 설치하는 방법은 여러가지가 있지만, 는
+Prometheus 를 Kubernetes 클러스터 내에 설치하는 방법은 여러가지가 있지만,
 
 helm chart 와 Prometheus Operator 를 사용하여 간단하게 설치하고, 실제 운용환경에서 손쉽게 운용할 수 있습니다.
 
-Helm Chart 와 Prometheus Operator 에 대한 자세한 아키텍쳐와 동작 구조은 해당 문서를 참조하시기 바랍니다.
+Helm Chart 와 Prometheus Operator 에 대한 자세한 아키텍쳐와 동작 구조 해당 문서를 참조하시기 바랍니다.
 
 * [Helm Chart](https://helm.sh/)
 * [Prometheus Operator](https://coreos.com/blog/the-prometheus-operator.html)
@@ -205,13 +205,13 @@ wondermz-grafana   LoadBalancer   10.100.247.37   a46547715f95a11e99a4a02a530d53
 실습이 끝나고 Helm chart 가 적용된 서비스들을 삭제하고 싶으시면, 다음 명령어를 입력하시면 됩니다.
 
 ~~~
-helm delete wondermz --purge
+$ helm delete wondermz --purge
 
-kubectl delete crd prometheuses.monitoring.coreos.com
-kubectl delete crd prometheusrules.monitoring.coreos.com
-kubectl delete crd servicemonitors.monitoring.coreos.com
-kubectl delete crd podmonitors.monitoring.coreos.com
-kubectl delete crd alertmanagers.monitoring.coreos.com
+$ kubectl delete crd prometheuses.monitoring.coreos.com
+  kubectl delete crd prometheusrules.monitoring.coreos.com
+  kubectl delete crd servicemonitors.monitoring.coreos.com
+  kubectl delete crd podmonitors.monitoring.coreos.com
+  kubectl delete crd alertmanagers.monitoring.coreos.com
 ~~~
 
 
