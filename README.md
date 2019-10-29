@@ -87,7 +87,6 @@ $ kubectl create namespace prometheus-operator
 $ kcd prometheus-operator
 ```
 
-***
 
 ### 2-1. Helm Custom Value 설정하기  
 
@@ -115,7 +114,7 @@ grafana:
 * `grafana.service.type` = `LoadBalancer` 는 Grafana Dashboard 에 접근하기 위해, EKS 에서 제공하는 AWS CLB 를 생성하여 해당 Grafana Pod를 연결하는 방식을 사용했습니다. 
 이 외에도 NodePort 방식을 사용해 직접 Port 를 개방할 수 있습니다.  
 
-***
+
 ### 2-2. Helm Chart 로 Prometheus Operator 설치하기 
 
 
@@ -175,7 +174,7 @@ statefulset.apps/alertmanager-wondermz-prometheus-operat-alertmanager   1/1     
 statefulset.apps/prometheus-wondermz-prometheus-operat-prometheus       1/1     17m
 ~~~
 
-***
+
 
 ### 2-3. Grafana Dashboard 접속하기
 
