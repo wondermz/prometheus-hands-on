@@ -18,11 +18,18 @@ Helm Chart 와 Prometheus Operator 에 대한 자세한 아키텍쳐와 동작 �
 
 Kubernetes Cluster 가 준비되지 않으신 분들은 [EKS HandsOn](https://github.com/wondermz/eks-hands-on)을 따라하신 후 이 HandsOn을 따라하시면 됩니다.
 
-### 1-1. Helm 설치하기
+### 1-1. 소스 코드 Clone 및 Helm 설치하기
 
-* Kubectl EC2 접속 후 
+ Kubectl EC2 instance 접속 후 진행하시기 바랍니다. 
 
-kubectl ec2 인스턴스에 접속한 후 다음의 명령어를 입력하여 설치 스크립트를 받고 실행하시면 됩니다.
+* source code 준비하기
+
+~~~
+$ git clone https://github.com/wondermz/prometheus-hands-on.git
+$ cd prometheus-hands-on
+~~~
+
+* kubectl ec2 인스턴스에 접속한 후 다음의 명령어를 입력하여 설치 스크립트를 받고 실행하시면 됩니다.
 
 ```
 $ curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
@@ -33,43 +40,24 @@ $ ./get_helm.sh
 
 ```
 
-### 1-2. Tiller 설정 및 Tiler Service Account 생
+
+### 1-2. Tiller 설정 및 Tiler Service Account 생성
 
 Helm 은 Tiller 라는 deploy Service 를 통해 kubernetes resource 들을 설치하기 때문에,
-Tiller 가 사용할 서비스 계정을 만들어야 합니다. 그 이후 helm 초기화를 통해 Prometheus 설치를 위한 helm 기본 준비를 합니다.
+Tiller 가 사용할 RBAC 서비스 계정을 만들어야 합니다. 
+
+이후 helm 초기화를 통해 Prometheus 설치를 위한 helm 기본 준비를 합니다.
+
+tiler service config file은 source code 폴더에 존재합니다.
 
 ```
-cat <<EoF > ~/rbac.yaml
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: tiller
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: tiller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: tiller
-    namespace: kube-system
-EoF
-
+$ kubectl apply -f rbac.yaml
 ```
 
-이제 config 파일을 적용한 후, tiller service account를 사용하여 helm init 을 적용하시면 됩니다. 
+config 파일을 kubernetes Cluster 에 적용한 후, tiller service account를 사용하여 helm init 을 적용하시면 됩니다. 
 
 ```
-
-$ kubectl apply -f ~/rbac.yaml
 $ helm init --service-account tiller
-
 ```
 
 
@@ -84,11 +72,13 @@ $ helm repo update
 $ helm search prometheus-operator
 ```
 
+prometheus Operator Chart를 확인할 수 있습니다.
+
 ~~~
 NAME                      	CHART VERSION	APP VERSION	DESCRIPTION
 stable/prometheus-operator	6.21.0       	0.32.0     	Provides easy monitoring definitions for Kubernetes servi...
 ~~~
-우선 특정 namespace 를 하나 생성하여 prometheus operator 를 설치합니다.
+우선 특정 namespace 를 하나 생성한 후 prometheus operator 를 설치합니다.
 
 
 
@@ -103,15 +93,13 @@ $ kcd prometheus-operator
 
 helm 은 설치 시 custom value 를 통해 간단하게 개인 환경에 맞는 설정으로 변경할 수 있습니다.
 
-Grafana Dashboard 접속과 password 설정을 위해 prometheus value yaml file 을 하나 생성합니다.  
+Grafana Dashboard 접속과 password 설정을 위해 Custom Value 를 사용합니다. 해당 설정은 `values.yml` 파일에 있습니다.
 
 혹시 Prometheus Operator에 추가로 설정하실 value 가 있다면 , 관련 value 설정은 [github](https://github.com/helm/charts/tree/master/stable/prometheus-operator)를 참조하시면 됩니다.
 
 ~~~
 vi values.yml
-~~~
 
-~~~
 #values.yml
 
 grafana: 
@@ -119,13 +107,22 @@ grafana:
   service: 
     type: LoadBalancer
 ~~~
+
+해당 HandsOn에서 사용하는 value.yml 파일을 살펴보면, 
+
+* `grafana.adminPassword` = `wondermz` 는 Grafana Dashboard 에 접속 시 사용할 Default Password 를 지정하는 것입니다.
+
+* `grafana.service.type` = `LoadBalancer` 는 Grafana Dashboard 에 접근하기 위해, EKS 에서 제공하는 AWS CLB 를 생성하여 해당 Grafana Pod를 연결하는 방식을 사용했습니다. 
+이 외에도 NodePort 방식을 사용해 직접 Port 를 개방할 수 있습니다.  
+
 ***
 ### 2-2. Helm Chart 로 Prometheus Operator 설치하기 
 
 
 
+기본적으로 Prometheus Operator stable version chart 를 사용합니다. 
 
-기본적으로 Prometheus Operator stable version chart 를 사용하며, --name 은 helm chart 의 release name, --namespace 는 namespace 지정, -f 는 해당 파일 지정 tag 를 사용하여 설치하시면 됩니다. 
+`--name` 은 helm chart 의 release name, `--namespace` 는 설치할 namespace 지정, `-f` 는 해당 파일 지정 옵션입니다.
 
 ~~~
 $ helm install stable/prometheus-operator --name wondermz --namespace prometheus-operator -f values.yml 
@@ -200,7 +197,7 @@ wondermz-grafana   LoadBalancer   10.100.247.37   a46547715f95a11e99a4a02a530d53
 ~~~
 
 
-접속 id 는 admin, 비밀번호는 wondermz 로 grafana dashboard 에 접속하시면 default dashboard 가 있는 것을 확인할 수 있습니다.
+접속 id 는 `admin`, 비밀번호는 `wondermz` 로 grafana dashboard 에 접속하시면 default dashboard 가 있는 것을 확인할 수 있습니다.
 
 
 
