@@ -200,6 +200,19 @@ wondermz-grafana   LoadBalancer   10.100.247.37   a46547715f95a11e99a4a02a530d53
 
 
 
+### 2-4. 실습 종류 후 Prometheus Operator 삭제하
+
+실습이 끝나고 Helm chart 가 적용된 서비스들을 삭제하고 싶으시면, 다음 명령어를 입력하시면 됩니다.
+
+~~~
+helm delete wondermz --purge
+
+kubectl delete crd prometheuses.monitoring.coreos.com
+kubectl delete crd prometheusrules.monitoring.coreos.com
+kubectl delete crd servicemonitors.monitoring.coreos.com
+kubectl delete crd podmonitors.monitoring.coreos.com
+kubectl delete crd alertmanagers.monitoring.coreos.com
+~~~
 
 
 
