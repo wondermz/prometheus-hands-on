@@ -98,9 +98,9 @@ Grafana Dashboard 접속과 password 설정을 위해 Custom Value 를 사용합
 
 ~~~
 vi values.yml
-
-#values.yml
-
+~~~
+#### 파일 내용
+~~~
 grafana: 
   adminPassword: wondermz
   service: 
